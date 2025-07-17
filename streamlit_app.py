@@ -1,6 +1,5 @@
 # Import python packages
 import streamlit as st
-from snowflake.snowpark.context import get_active_session
 from snowflake.snowpark.functions import col
 
 # Title and description
@@ -9,7 +8,8 @@ name_on_order = st.text_input("Name of Smoothie")
 st.write("The name on your order is ", name_on_order)
 
 # Fetch fruit options from Snowflake
-session = get_active_session()
+cnx=st.connection("snowflake")
+session = cnx.session()
 all_fruits = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME')).to_pandas()['FRUIT_NAME'].tolist()
 
 # Multi-select for ingredients

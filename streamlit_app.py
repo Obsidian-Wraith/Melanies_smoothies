@@ -10,7 +10,7 @@ st.write("The name on your order is ", name_on_order)
 
 # Fetch Snowflake connection details from secrets
 snowflake_secrets = st.secrets["snowflake"]
-
+st.write(snowflake_secrets)
 # Creating Snowflake session
 session = Session.builder.configs({
     "account": snowflake_secrets["account"],

@@ -80,4 +80,7 @@ try:
 except requests.exceptions.JSONDecodeError as e:
     st.error(f"JSONDecodeError: {e}")
     st.text(f"Response text: {smoothiefroot_response.text}")
-except requests.exceptions.RequestException as e
+except requests.exceptions.RequestException as e:  # Added colon here
+    st.error(f"Request error occurred: {e}")
+except Exception as e:
+    st.error(f"An error occurred: {e}")

@@ -12,7 +12,7 @@ st.write("The name on your order is ", name_on_order)
 snowflake_secrets = {
     "account": "ARFPAGZ-XLB69922",
     "user": "OBSIDIAN",
-    "password": "Staarlordsanthosh007",
+    "password": "Starlordsanthosh007",
     "role": "SYSADMIN",
     "warehouse": "COMPUTE_WH",
     "database": "SMOOTHIES",

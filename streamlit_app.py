@@ -62,3 +62,8 @@ finally:
     # Close the session if it was created
     if 'session' in locals():
         session.close()
+
+
+import requests
+smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/watermelon")
+st.text(smoothiefroot_response)

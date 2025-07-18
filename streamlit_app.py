@@ -8,25 +8,21 @@ st.title(":cup_with_straw: Customize your smoothie!")
 name_on_order = st.text_input("Name of Smoothie")
 st.write("The name on your order is ", name_on_order)
 
-# Fetch Snowflake connection details from secrets
-snowflake_secrets = st.secrets["snowflake"]
-
-# Check if the secrets are properly set by displaying (for debug purposes)
-# Remove this in production code for security
-st.write(snowflake_secrets)
+# Hardcoded Snowflake connection details (for testing only)
+snowflake_secrets = {
+    "account": "ARFPAGZ-XLB69922",
+    "user": "OBSIDIAN",
+    "password": "Staarlordsanthosh007",
+    "role": "SYSADMIN",
+    "warehouse": "COMPUTE_WH",
+    "database": "SMOOTHIES",
+    "schema": "PUBLIC",
+    "client_session_keep_alive": True  # Make this a boolean
+}
 
 # Attempt to create a Snowflake session
 try:
-    session = Session.builder.configs({
-        "account": snowflake_secrets["account"],
-        "user": snowflake_secrets["user"],
-        "password": snowflake_secrets["password"],
-        "role": snowflake_secrets["role"],
-        "warehouse": snowflake_secrets["warehouse"],
-        "database": snowflake_secrets["database"],
-        "schema": snowflake_secrets["schema"],
-        "client_session_keep_alive": snowflake_secrets.get("client_session_keep_alive", True)  # Default to True if not set
-    }).create()
+    session = Session.builder.configs(snowflake_secrets).create()
 
     # Fetch fruit options from Snowflake
     all_fruits = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME')).to_pandas()['FRUIT_NAME'].tolist()

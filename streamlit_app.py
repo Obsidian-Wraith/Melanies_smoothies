@@ -2,6 +2,7 @@
 import streamlit as st
 from snowflake.snowpark import Session
 from snowflake.snowpark.functions import col
+import requests
 
 # Title and description
 st.title(":cup_with_straw: Customize your smoothie!")
@@ -12,7 +13,7 @@ st.write("The name on your order is ", name_on_order)
 snowflake_secrets = {
     "account": "ARFPAGZ-XLB69922",
     "user": "OBSIDIAN",
-    "password": "Starlordsanthosh007",
+    "password": "Starlordsanthosh007",  # Be cautious with hardcoding passwords
     "role": "SYSADMIN",
     "warehouse": "COMPUTE_WH",
     "database": "SMOOTHIES",
@@ -52,7 +53,7 @@ try:
                 st.success('Your Smoothie is ordered! Thank you, Melly!', icon="✅")
             except Exception as e:
                 # Capture and display any errors that occur during insertion
-                st.error(f"Error occurred: {e}")
+                st.error(f"Error occurred while placing the order: {e}")
 
 except Exception as e:
     # Handle connection errors
@@ -63,7 +64,19 @@ finally:
     if 'session' in locals():
         session.close()
 
+# Fetch data from API
+try:
+    smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/watermelon")
+    # Check response status code
+    if smoothiefroot_response.status_code == 200:
+        # Attempt to parse the response as JSON
+        data = smoothiefroot_response.json()
+        st.text(data)  # Display the JSON data
+    else:
+        st.error(f"Error fetching data from API: {smoothiefroot_response.status_code}, {smoothiefroot_response.text}")
 
-import requests
-smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/watermelon")
-st.text(smoothiefroot_response.json() )
+except requests.exceptions.JSONDecodeError as e:
+    st.error(f"JSONDecodeError: {e}")
+    st.text(f"Response text: {smoothiefroot_response.text}")
+except Exception as e:
+    st.error(f"An error occurred: {e}")

@@ -1,8 +1,8 @@
-# Import python packages
 import streamlit as st
 from snowflake.snowpark import Session
 from snowflake.snowpark.functions import col
 import requests
+import time
 
 # Title and description
 st.title(":cup_with_straw: Customize your smoothie!")
@@ -64,19 +64,24 @@ finally:
     if 'session' in locals():
         session.close()
 
-# Fetch data from API
-try:
-    smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/watermelon")
-    # Check response status code
-    if smoothiefroot_response.status_code == 200:
-        # Attempt to parse the response as JSON
-        data = smoothiefroot_response.json()
-        st.text(data)  # Display the JSON data
-    else:
-        st.error(f"Error fetching data from API: {smoothiefroot_response.status_code}, {smoothiefroot_response.text}")
+# Fetch data from API with retry logic
+url = "https://my.smoothiefroot.com/api/fruit/watermelon"
+max_retries = 3
+retry_delay = 2  # seconds
 
-except requests.exceptions.JSONDecodeError as e:
-    st.error(f"JSONDecodeError: {e}")
-    st.text(f"Response text: {smoothiefroot_response.text}")
-except Exception as e:
-    st.error(f"An error occurred: {e}")
+for attempt in range(max_retries):
+    try:
+        smoothiefroot_response = requests.get(url, timeout=10)
+        # Check response status code
+        if smoothiefroot_response.status_code == 200:
+            # Attempt to parse the response as JSON
+            data = smoothiefroot_response.json()
+            st.text(data)  # Display the JSON data
+            break  # Exit the loop if successful
+        else:
+            st.error(f"Error fetching data from API: {smoothiefroot_response.status_code}, {smoothiefroot_response.text}")
+            break  # Exit on non-retryable error
+
+    except requests.exceptions.RequestException as e:
+        st.error(f"Request failed: {e}. Attempt {attempt + 1} of {max_retries}.")
+        time.sleep(retry_delay)  # Wait before retrying
